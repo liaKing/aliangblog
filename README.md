@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # bluebell
 bluebell是一个基于gin框架和Vue框架搭建的前后端分离的web项目。
 
@@ -19,6 +19,4 @@ bluebell是一个基于gin框架和Vue框架搭建的前后端分离的web项目
 
 - [网易云课堂课程连接](https://study.163.com/course/courseMain.htm?courseId=1210171207&share=2&shareId=480000002229610)
 - [51CTO课程链接](https://edu.51cto.com/sd/68c23)
-=======
-# aliangblog
->>>>>>> 205ef03e09d133dad3006f598a5d6f9e36e1de17
+

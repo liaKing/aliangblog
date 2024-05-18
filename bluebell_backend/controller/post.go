@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bluebell_backend/dao/mysql"
 	"bluebell_backend/dao/redis"
 	"bluebell_backend/logic"
 	"bluebell_backend/models"
@@ -40,17 +41,18 @@ func CreatePostHandler(c *gin.Context) {
 }
 
 func GetPostListByTitle(c *gin.Context) {
-	order, _ := c.GetQuery("order")
+
 	pageStr, ok := c.GetQuery("page")
 	if !ok {
 		pageStr = "1"
 	}
-
+	title, _ := c.GetQuery("title")
 	pageNum, err := strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
 		pageNum = 1
 	}
-	posts := redis.GetPost(order, pageNum)
+	posts, err := mysql.GetPostListByTitle(title, pageNum)
+
 	fmt.Println(len(posts))
 	ResponseSuccess(c, posts)
 }
@@ -92,4 +94,41 @@ func PostDetailHandler(c *gin.Context) {
 	}
 
 	ResponseSuccess(c, post)
+}
+
+func GetPostAuditListByTitle(c *gin.Context) {
+	pageStr, ok := c.GetQuery("page")
+	if !ok {
+		pageStr = "1"
+	}
+
+	pageNum, err := strconv.ParseInt(pageStr, 10, 64)
+	if err != nil {
+		pageNum = 1
+	}
+
+	posts, err := mysql.GetPostAuditListByTitle(pageNum)
+
+	fmt.Println(len(posts))
+	ResponseSuccess(c, posts)
+}
+
+func PostAuditSuccess(c *gin.Context) {
+	postId, _ := c.GetQuery("postId")
+
+	posts, _ := mysql.PostAuditSuccess(postId)
+
+	ResponseSuccess(c, posts)
+}
+
+func PostAuditFail(c *gin.Context) {
+	postId, _ := c.GetQuery("postId")
+
+	err := mysql.PostAuditFail(postId)
+	if err != nil {
+		ResponseErrorWithMsg(c, CodeInvalidParams, err.Error())
+		return
+	}
+
+	ResponseSuccess(c, postId)
 }

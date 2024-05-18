@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -50,7 +51,8 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 	// 生成Token
-	aToken, rToken, _ := jwt.GenToken(u.UserID)
+	Uint64Value, _ := strconv.ParseUint(u.UserID, 10, 64)
+	aToken, rToken, _ := jwt.GenToken(Uint64Value)
 	ResponseSuccess(c, gin.H{
 		"accessToken":  aToken,
 		"refreshToken": rToken,

@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <div class="page">
-      <HeadBar />
-      <router-view />
+      <!-- <HeadBar /> -->
+      <!-- <router-view /> -->
+      <HeadBar @search="searchInput = $event" />
+      <router-view :searchInput="searchInput" />
     </div>
   </div>
 </template>
@@ -13,12 +15,17 @@ import HeadBar from "@/components/HeadBar.vue";
 export default {
   components: {
     HeadBar
-  }
+  },
+  data() {
+    return {
+      searchInput: '', // 存储从HeadBar.vue接收到的搜索值
+    };
+  },
 };
 </script>
 
 <style lang="less">
-@import url("./assets/css/iconfont.css");
+/*@import url("./assets/css/iconfont.css");*/
 html, body{
     width: 100%;
     height: 100%;

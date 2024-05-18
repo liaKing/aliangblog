@@ -3,12 +3,19 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"time"
 )
 
 type User struct {
-	UserID   uint64 `json:"user_id" db:"user_id"`
+	UserID   string `json:"user_id" db:"user_id"`
 	UserName string `json:"username" db:"username"`
 	Password string `json:"password" db:"password"`
+}
+
+type UserInfo struct {
+	*User
+	CreateTime time.Time `json:"createTime" db:"create_time"`
+	DelFlg     bool      `json:"delFlg" db:"del_flg"`
 }
 
 func (u *User) UnmarshalJSON(data []byte) (err error) {

@@ -3,7 +3,7 @@
       <span class="logo" @click="goIndex">bluebell</span>
     <div class="search">
       <label class="s-logo"></label>
-      <input type="text" class="s-input" placeholder="搜索" />
+      <input v-model="input" @input="onInput" type="text" class="s-input" placeholder="搜索" />
     </div>
     <div class="btns">
       <div v-show="!isLogin">
@@ -23,6 +23,11 @@
 <script>
 export default {
   name: "HeadBar",
+  data() {
+    return {
+      input: '',//搜索
+    }
+  },
   created(){
     this.$store.commit("init");
   },
@@ -47,7 +52,12 @@ export default {
     },
     goLogout(){
       this.$store.commit("logout");
-    }
+    },
+    onInput(event) {
+      this.input = event.target.value;
+      this.$emit('search', this.input); // 触发事件并传递input的值
+      console.log('input');
+    },
   }
 };
 </script>

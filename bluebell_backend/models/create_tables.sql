@@ -64,3 +64,18 @@ CREATE TABLE `comment` (
   UNIQUE KEY `idx_comment_id` (`comment_id`),
   KEY `idx_author_Id` (`author_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE star (
+                      star_id VARCHAR(64) PRIMARY KEY,
+                      user_id VARCHAR(64) NOT NULL,
+                      parent_id VARCHAR(64) NOT NULL,
+                      target_id VARCHAR(64) NOT NULL,
+                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE collect_link (
+                              collect_id VARCHAR(64) PRIMARY KEY,
+                              user_id VARCHAR(64) NOT NULL,
+                              parent_id VARCHAR(64) NOT NULL,
+                              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -2,7 +2,7 @@
   <div class="content">
     <div class="left">
       <div class="container">
-        <div class="post">
+        <!-- <div class="post">
           <a class="vote">
             <span class="iconfont icon-up"></span>
           </a>
@@ -10,15 +10,10 @@
           <a class="vote">
             <span class="iconfont icon-down"></span>
           </a>
-        </div>
+        </div> -->
         <div class="l-container">
-          <h4 class="con-title">{{post.title}}</h4>
-          <div class="con-info">{{post.content}}</div>
-          <div class="user-btn" @click="comment()">
-            <span class="btn-item">
-              <i class="iconfont icon-comment"></i>comment
-            </span>
-          </div>
+          <h4 class="con-title">{{ post.title }}</h4>
+          <div class="con-info">{{ post.content }}</div>
         </div>
       </div>
 
@@ -26,34 +21,46 @@
         <div class="c-left">
           <div class="line"></div>
           <div class="c-arrow">
-                            <a class="vote"><span class="iconfont icon-up"></span></a>
-                            <a class="up down"></a>
+            <a class="up down"></a>
           </div>
         </div>
+
         <div class="c-right">
           <div class="c-user-info">
-            <span class="name">mahlerific</span>
-            <span class="num">1.4k points</span>
-            <span class="num">· 5 hours ago</span>
+<!--            根据用户id和文章判断是否以点赞，收藏，有则高亮-->
+            <span class="name mr"><i class="iconfont icon-comment"></i> {{ post.commentNumber }}</span>
+            <span class="num mr"  @click="isCol"><i class="iconfont icon-collect" :class="{isCollect:isCollect}"></i> {{ post.collectNumber }}</span>
+            <span class="num mr"  @click="isStar"><i class="iconfont icon-star"   :class="{starAlready:starAlready}"></i> {{ post.starNumber }}</span>
+            <div class="user-btn" @click="comment()">
+              <span class="btn-item">
+                <i class="iconfont icon-pinglun"></i>comment
+              </span>
+            </div>
           </div>
-          <p
+          <div
             class="c-content"
-            v-for="(item) of commentList"
+            v-for="item of commentList"
             :key="item.comment_id"
           >
-            {{item.content}}
-          </p>
+            <div  class="time">
+              用户名
+              <span>{{ getFormattedDate(item.create_time) }}</span>
+            </div>
+            <span>{{ item.content }}</span>
+        </div>
         </div>
       </div>
     </div>
+
+<!--写死的不用管下面的代码-->
     <div class="right">
       <div class="topic-info">
         <h5 class="t-header"></h5>
         <div class="t-info">
           <a class="avatar"></a>
-          <span class="topic-name">b/{{post.community_name}}</span>
+          <span class="topic-name">b/{{ post.community_name }}</span>
         </div>
-        <p class="t-desc">树洞 树洞 无限树洞的树洞</p>
+        <p class="t-desc">森林狼总冠军</p>
         <ul class="t-num">
           <li class="t-num-item">
             <p class="number">5.2m</p>
@@ -72,58 +79,207 @@
 </template>
 
 <script>
+//使用import语句导入了一个名为formatDate的函数，这个函数用于将日期格式化为更易读的格式，具体是将评论的时间进行处理，因为后端传回来的时间数据格式有问题。
+import formatDate from "../components/formatFDate";
+// 使用export default导出了Content组件。具体什么作用不是很清楚
 export default {
-  name: "Content",
-  data(){
+  name: "Content",//声明组件名
+  data() { //data函数是什么意思？实现的文件是自己写的，还是内置？
     return {
-      post:{},
-      commentList:[]
-    }
+      post: {},
+      commentList: [],
+      isCollect:false,
+      starAlready:false,
+    };
   },
-  methods:{
-    getPostDetail() {
+  methods: {
+    getFormattedDate(timeStr) {//关于时间的格式修改
+      return formatDate(timeStr);
+    },
+    //下面这个方法是怎么调用的呢？打开页面就调用？
+    getPostDetail() {//params.id是哪里来的，打开这个组件网页时传来的吗？
       this.$axios({
         method: "get",
-        url: "/post/"+ this.$route.params.id,
+        url: "/post/" + this.$route.params.id,
       })
-        .then(response => {
+        .then((response) => {
           console.log(1, response.data);
           if (response.code == 1000) {
-            this.post = response.data;
+            this.post = response.data;//this.post是早先定义的响应式数据属性，在这里为其赋值，
           } else {
             console.log(response.msg);
           }
-          this.getCommentList( response.data.post_id)
+          this.getCommentList(response.data.post_id);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
+    //上面方法运行完就会自动运行下面的方法。
     getCommentList(id) {
       this.$axios({
         method: "get",
         url: "/comment",
-        params:{post_id:id}
+        params: { postId: id },
       })
-          .then(response => {
+        .then((response) => {
+          console.log(1, response.data);
+          this.commentList = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    // 收藏
+    deleteCollect() {
+      this.$axios({
+        method: "delete",
+        url: "/collect",
+        params: {postId: this.$route.params.id}
+      })
+          .then((response) => {
             console.log(1, response.data);
-            this.commentList=response.data
+            if (response.code == 1000) {
+              this.isCollect = false//this.post是早先定义的响应式数据属性，在这里为其赋值，
+              this.getPostDetail()
+
+            } else {
+              console.log(response.msg);
+            }
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error);
           });
     },
-    comment(){
-      console.log(11)
-    }
+    // 是否收藏
+    getPostCollect(){
+      this.$axios({
+        method: "get",
+        url: "/collect",
+        params:{postId:this.$route.params.id}
+      })
+          .then((response) => {
+            console.log(1, response.data);
+            if (response.code == 1000) {
+              this.isCollect = response.data;//this.post是早先定义的响应式数据属性，在这里为其赋值，
+              this.getPostDetail()
+            } else {
+              console.log(response.msg);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
+    postCollect() {
+      this.$axios({
+        method: "post",
+        url: "/collect",
+        data:{parentId:this.post.post_id}
+      })
+          .then((response) => {
+            console.log(1, response.data);
+            if (response.code == 1000) {
+              this.isCollect = true;//this.post是早先定义的响应式数据属性，在这里为其赋值，
+              this.getPostDetail()
+            } else {
+              console.log(response.msg);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
+    comment() {
+      console.log(11);
+    },
+    isCol(){
+      // this.isCollect=!this.isCollect
+      if (this.isCollect) {
+        this.deleteCollect()
+      } else {
+        this.postCollect()
+      }
+    },
+
+    // 点赞
+    isStar(){
+      if (this.starAlready) {
+        this.deleteStar()
+      } else {
+        this.createStar()
+      }
+    },
+    deleteStar() {
+      this.$axios({
+        method: "delete",
+        url: "/star",
+        params:{postId:this.post.post_id}
+      })
+          .then((response) => {
+            console.log(1, response.data);
+            if (response.code == 1000) {
+              this.starAlready = false;//this.post是早先定义的响应式数据属性，在这里为其赋值，
+              this.getPostDetail()
+            } else {
+              console.log(response.msg);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
+    createStar() {
+      this.$axios({
+        method: "post",
+        url: "/star",
+        data:{parentId:this.post.post_id,targetId:this.post.post_id}
+      })
+          .then((response) => {
+            console.log(1, response.data);
+            if (response.code == 1000) {
+              this.starAlready = true;//this.post是早先定义的响应式数据属性，在这里为其赋值，
+              this.getPostDetail()
+            } else {
+              console.log(response.msg);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
+    getStarAlready(){
+      // console.log("111111")
+      this.$axios({
+        method: "get",
+        url: "/star",
+        params:{postId:this.$route.params.id}
+      })
+          .then((response) => {
+            console.log(1, response.data);
+            if (response.code == 1000) {
+              this.starAlready = response.data;//this.post是早先定义的响应式数据属性，在这里为其赋值，
+            } else {
+              console.log(response.msg);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
   },
-  mounted: function() {
+  mounted: function () {
     this.getPostDetail();
-  }
+    this.getPostCollect();
+    this.getStarAlready()
+  },
 };
 </script>
 
 <style lang="less" scoped>
+.mr {
+  margin-right: 10px;
+}
 .content {
   max-width: 100%;
   box-sizing: border-box;
@@ -175,7 +331,7 @@ export default {
       }
       .l-container {
         padding: 15px;
-        margin-left: 40px;
+        // margin-left: 40px;
         .con-title {
           color: #000000;
           font-size: 18px;
@@ -184,8 +340,8 @@ export default {
           text-decoration: none;
           word-break: break-word;
         }
-        .con-info{
-          margin: 25px 0;
+        .con-info {
+          margin: 20px 0;
           padding: 15px 0;
           border-bottom: 1px solid grey;
         }
@@ -197,20 +353,6 @@ export default {
           background-size: cover;
           margin-top: 10px;
           margin-bottom: 10px;
-        }
-        .user-btn {
-          font-size: 12px;
-          display: flex;
-          display: -webkit-flex;
-          .btn-item {
-            display: flex;
-            display: -webkit-flex;
-            align-items: center;
-            margin-right: 10px;
-            .iconfont{
-              margin-right: 4px;
-            }
-          }
         }
       }
     }
@@ -240,8 +382,32 @@ export default {
       .c-right {
         margin-left: 40px;
         padding-right: 10px;
+        position: relative;
         .c-user-info {
           margin-bottom: 10px;
+        .isCollect{
+          background-color:yellow;
+        }
+        .starAlready{
+          background-color: red;
+        }
+          .user-btn {
+            position: absolute;
+            top: 0px;
+            right: 10px;
+            font-size: 12px;
+            display: flex;
+            display: -webkit-flex;
+            .btn-item {
+              display: flex;
+              display: -webkit-flex;
+              align-items: center;
+              margin-right: 10px;
+              .iconfont {
+                margin-right: 4px;
+              }
+            }
+          }
           .name {
             color: #1c1c1c;
             font-size: 12px;
@@ -263,6 +429,10 @@ export default {
           line-height: 21px;
           word-break: break-word;
           color: rgb(26, 26, 27);
+          margin-bottom: 15px;
+          .time{
+            color: #7c7c7c;
+          }
         }
       }
     }

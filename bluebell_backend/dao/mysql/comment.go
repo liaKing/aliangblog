@@ -36,3 +36,13 @@ func GetCommentListByIDs(ids []string) (commentList []*models.Comment, err error
 	err = db.Select(&commentList, query, args...)
 	return
 }
+
+func GetCommentListByPostId(page int64, postId string) (commentList []*models.Comment, err error) {
+	sqlStr := `SELECT comment_id,content,post_id,author_id,parent_id,create_time FROM comment WHERE post_id = ? LIMIT 10 OFFSET ?;`
+	offset := (page - 1) * 10
+
+	commentList = make([]*models.Comment, 0, 10)
+	err = db.Select(&commentList, sqlStr, postId, offset)
+
+	return
+}

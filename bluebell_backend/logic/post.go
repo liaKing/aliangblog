@@ -7,7 +7,6 @@ import (
 	"bluebell_backend/pkg/snowflake"
 	"fmt"
 	"go.uber.org/zap"
-	"strconv"
 )
 
 func CreatePost(post *models.Post) (err error) {
@@ -17,9 +16,8 @@ func CreatePost(post *models.Post) (err error) {
 		zap.L().Error("snowflake.GetID() failed", zap.Error(err))
 		return
 	}
-	postIdStr := strconv.FormatUint(postID, 10)
 
-	post.PostID = postIdStr
+	post.PostID = postID
 	// 创建帖子
 	if err := mysql.CreatePost(post); err != nil {
 		zap.L().Error("mysql.CreatePost(&post) failed", zap.Error(err))

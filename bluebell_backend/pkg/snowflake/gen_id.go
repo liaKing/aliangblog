@@ -2,6 +2,7 @@ package snowflake
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/sony/sonyflake"
@@ -29,12 +30,13 @@ func Init(machineId uint16) (err error) {
 }
 
 // GetID 返回生成的id值
-func GetID() (id uint64, err error) {
+func GetID() (id string, err error) {
 	if sonyFlake == nil {
 		err = fmt.Errorf("snoy flake not inited")
 		return
 	}
 
-	id, err = sonyFlake.NextID()
+	id64, err := sonyFlake.NextID()
+	id = strconv.FormatUint(id64, 10)
 	return
 }

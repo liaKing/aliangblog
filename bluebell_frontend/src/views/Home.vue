@@ -3,40 +3,75 @@
     <div class="left">
       <!-- <h4 class="c-l-title">热门帖子</h4> -->
       <div class="c-l-header">
-<!--        :class判断展示最新帖子还是最热帖子-->
-        <div class="new btn-iconfont"
-        :class="{ active: timeOrder }"
-        @click="selectOrder('time')"
+        <!-- :class判断展示最新帖子还是最热帖子-->
+        <div
+          class="new btn-iconfont"
+          :class="{ active: timeOrder }"
+          @click="selectOrder('time')"
         >
-          <i class="iconfont icon-polygonred"></i>New
+          <i class="iconfont icon-find"></i>New
         </div>
-        <div class="top btn-iconfont"
-         :class="{ active: scoreOrder }"
-         @click="selectOrder('score')"
+        <div
+          class="top btn-iconfont"
+          :class="{ active: scoreOrder }"
+          @click="selectOrder('score')"
         >
-          <i class="iconfont icon-top"></i>Score
+          <i class="iconfont icon-rank"></i>Score
+        </div>
+        <div
+          class="new btn-iconfont"
+          :class="{ active: blogVerify }"
+          @click="selectVerify('blogVerify')"
+        >
+          <i class="iconfont icon-vertify"></i>
+          博客审核
+        </div>
+        <div
+          class="top btn-iconfont"
+          :class="{ active: uInfoManager }"
+          @click="selectManager('uInfoManager')"
+        >
+          <i class="iconfont icon-usermanage"></i>
+          <div>用户信息管理</div>
         </div>
         <button class="btn-publish" @click="goPublish">发表</button>
       </div>
-      <ul class="c-l-list">
-        <li class="c-l-item"  v-for="post in postList" :key="post.id">
-          <div class="post">
-            <a class="vote">
-              <span class="iconfont icon-up"
-              @click="vote(post.id, '1')"
-              ></span>
-            </a>
-            <span class="text">{{post.vote_num}}</span>
-            <a class="vote">
-              <span class="iconfont icon-down"
-              @click="vote(post.id, '-1')"
-              ></span>
-            </a>
+      <!-- 用户信息管理 -->
+      <ul v-if="isUser" class="c-l-list">
+        <li class="c-l-item" v-for="(info, index) in infoList" :key="index">
+          <div class="flex-container">
+            <div class="flex">
+              <h4 class="flex-title">{{ info.username }}</h4>
+              <span class="con-memo">{{ getFormattedDate(info.createTime) }}</span>
+            </div>
+            <span class="btn" v-if="info.delFlg" @click="recoverDel(info.username)">撤销删除</span>
+            <span class="btn" v-else @click="deleteUser(info.user_id)">删除用户</span>
           </div>
+        </li>
+      </ul>
+      <!-- 非用户信息管理 -->
+      <ul v-else class="c-l-list">
+        <li
+          class="c-l-item"
+          v-for="(post, index) in postList"
+          :key="index + post.id"
+        >
+          <!-- <div class="post">
+            <a class="vote">
+              <span class="iconfont icon-up" @click="vote(post.id, '1')"></span>
+            </a>
+            <span class="text">{{ post.vote_num }}</span>
+            <a class="vote">
+              <span
+                  class="iconfont icon-down"
+                  @click="vote(post.id, '-1')"
+              ></span>
+            </a>
+          </div> -->
           <div class="l-container" @click="goDetail(post.post_id)">
-            <h4 class="con-title">{{post.title}}</h4>
+            <h4 class="con-title">{{ post.title }}</h4>
             <div class="con-memo">
-              <p>{{post.content}}</p>
+              <p>{{ post.content }}</p>
             </div>
             <!-- <div class="user-btn">
               <span class="btn-item">
@@ -51,7 +86,7 @@
     <div class="right">
       <div class="communities">
         <h2 class="r-c-title">今日火热频道排行榜</h2>
-        <ul class="r-c-content">
+        <!-- <ul class="r-c-content">
           <li class="r-c-item">
             <span class="index">1</span>
             <i class="icon"></i>
@@ -67,9 +102,16 @@
             <i class="icon"></i>
             b/job
           </li>
+        </ul> -->
+        <ul class="r-c-content">
+          <li class="r-c-item" v-for="(item, index) in hotChannel" :key="index">
+            <span class="index">{{ index + 1 }}</span>
+            <i class="icon"></i>{{ item.title }}
+          </li>
         </ul>
         <button class="view-all">查看所有</button>
       </div>
+      <!--
       <div class="r-trending">
         <h2 class="r-t-title">持续热门频道</h2>
         <ul class="rank">
@@ -105,34 +147,74 @@
           </li>
         </ul>
       </div>
+      -->
     </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import formatDate from "../components/formatFDate";
 
 export default {
   name: "Home",
   components: {},
+  props: ["searchInput"],
   data() {
     return {
       order: "time",
+      type: "time",
       page: 1,
-      postList: []
+      postList: [],
+      infoList: [],
+      isUser: false,
+      hotChannel: [
+        { title: "专注跳投" },
+        { title: "NBA赛事讲解" },
+        { title: "专注跳投" },
+        { title: "NBA赛事讲解" },
+        { title: "专注跳投" },
+        { title: "NBA赛事讲解" },
+        { title: "专注跳投" },
+        { title: "NBA赛事讲解" },
+        { title: "专注跳投" },
+        { title: "NBA赛事讲解" },
+      ], //火热频道排行榜
     };
   },
-  methods: {
-    selectOrder(order){
-      this.order = order;
-      this.getPostList()
+  watch: {
+    searchInput: {
+      handler() {
+        // console.log('home',this.searchInput);
+        this.getSearchList();
+      },
     },
-    goPublish(){
+  },
+  methods: {
+    getFormattedDate(timeStr) {
+      return formatDate(timeStr);
+    },
+    selectOrder(order) {
+      this.isUser = false;
+      this.type = order;
+      this.order = order;
+      this.getPostList();
+    },
+    selectVerify(val) {
+      this.isUser = false;
+      this.type = val;
+      this.getPostAudit();
+    },
+    selectManager(val) {
+      this.isUser = true;
+      this.type = val;
+      this.getUserList();
+    },
+    goPublish() {
       this.$router.push({ name: "Publish" });
     },
-    goDetail(id){
-
-      this.$router.push({ name: "Content", params: { id: id }});
+    goDetail(id) {
+      this.$router.push({ name: "Content", params: { id: id } });
     },
     getPostList() {
       this.$axios({
@@ -141,52 +223,161 @@ export default {
         params: {
           page: this.page,
           order: this.order,
-        }
+        },
       })
-        .then(response => {
-          console.log(response.data, 222);
+        .then((response) => {
           if (response.code == 1000) {
             this.postList = response.data;
+            console.log("首页", this.postList);
           } else {
             console.log(response.msg);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
-    vote(post_id, direction){
+    // 根据搜索内容查询list
+    getSearchList() {
+      this.$axios({
+        method: "get",
+        url: "/posts/getPostByTitle",
+        params: {
+          page: this.page,
+          title: this.searchInput,
+        },
+      })
+        .then((response) => {
+          if (response.code == 1000) {
+            this.postList = response.data;
+            console.log("搜索内容查询list", this.postList);
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    // /posts/getPostAudit
+    getPostAudit() {
+      this.$axios({
+        method: "get",
+        url: "/posts/getPostAudit",
+        params: {
+          page: this.page,
+        },
+      })
+        .then((response) => {
+          if (response.code == 1000) {
+            this.postList = response.data;
+            console.log("博客审核", this.postList);
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    // 获取管理用户信息列表
+    getUserList() {
+      this.$axios({
+        method: "get",
+        url: "/admin/userList",
+        params: {
+          page: this.page,
+        },
+      })
+        .then((response) => {
+          if (response.code == 1000) {
+            this.infoList = response.data;
+            console.log("用户信息", this.infoList);
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    deleteUser(userId){
+      this.$axios({
+        method: "put",
+        url: "/admin/deleteUser",
+        params: {
+          userId: userId,
+        },
+      })
+        .then((response) => {
+          if (response.code == 1000) {
+            this.getUserList()
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    recoverDel(userName){
+      this.$axios({
+        method: "put",
+        url: "/admin/recoverUser",
+        params: {
+          userName: userName,
+        },
+      })
+        .then((response) => {
+          if (response.code == 1000) {
+            this.getUserList()
+            console.log("删除用户信息", response.data);
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    vote(post_id, direction) {
       this.$axios({
         method: "post",
         url: "/vote",
         data: JSON.stringify({
           post_id: post_id,
           direction: direction,
-        })
+        }),
       })
-        .then(response => {
+        .then((response) => {
           if (response.code == 1000) {
             console.log("vote success");
           } else {
             console.log(response.msg);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
-    }
+    },
   },
-  mounted: function() {
+  mounted: function () {
     this.getPostList();
   },
-  computed:{
-    timeOrder(){
-      return this.order == "time";
+  computed: {
+    timeOrder() {
+      return this.type == "time";
     },
-    scoreOrder(){
-      return this.order == "score";
-    }
-  }
+    scoreOrder() {
+      return this.type == "score";
+    },
+    blogVerify() {
+      return this.type == "blogVerify";
+    },
+    uInfoManager() {
+      return this.type == "uInfoManager";
+    },
+  },
 };
 </script>
 
@@ -231,6 +422,7 @@ export default {
       .btn-iconfont {
         display: flex;
         display: -webkit-flex;
+        cursor: pointer;
       }
       .active {
         background: #f6f7f8;
@@ -248,6 +440,7 @@ export default {
       }
       .top {
         font-size: 14px;
+        margin-right: 18px;
       }
       .btn-publish {
         width: 64px;
@@ -291,6 +484,31 @@ export default {
         background-color: rgba(255, 255, 255, 0.8);
         color: #878a8c;
         position: relative;
+        .flex-container {
+          padding: 15px;
+          display: flex;
+          justify-content: space-between;
+          align-content: center;
+          .flex {
+            display: flex;
+            align-content: center;
+          }
+          .flex-title{
+            color: #000000;
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            word-break: break-word;
+            margin-right: 10px;
+          }
+          .btn{
+            font-size: 15px;
+            padding: 5px 10px ;
+            color: #fff;
+            border-radius: 4px;
+            background-color: #0079d3;
+          }
+        }
         .post {
           align-items: center;
           box-sizing: border-box;
@@ -335,6 +553,7 @@ export default {
             margin-top: 10px;
             margin-bottom: 10px;
           }
+
           .con-cover {
             height: 512px;
             width: 100%;
@@ -408,7 +627,7 @@ export default {
           .icon {
             width: 32px;
             height: 32px;
-            background-image: url("../assets/images/avatar.png");
+            background-image: url("../assets/images/avatar06.png");
             background-repeat: no-repeat;
             background-size: cover;
             margin-right: 20px;

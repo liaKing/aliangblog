@@ -5,6 +5,7 @@ import (
 	"bluebell_backend/models"
 	"bluebell_backend/pkg/snowflake"
 	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -48,15 +49,24 @@ func CommentHandler(c *gin.Context) {
 
 // CommentListHandler 评论列表
 func CommentListHandler(c *gin.Context) {
-	ids, ok := c.GetQueryArray("ids")
+	pageStr, ok := c.GetQuery("page")
+	if !ok {
+		pageStr = "1"
+	}
+	pageNum, err := strconv.ParseInt(pageStr, 10, 64)
+	if err != nil {
+		pageNum = 1
+	}
+
+	postId, ok := c.GetQuery("postId")
 	if !ok {
 		ResponseError(c, CodeInvalidParams)
 		return
 	}
-	posts, err := mysql.GetCommentListByIDs(ids)
-	if err != nil {
-		ResponseError(c, CodeServerBusy)
-		return
-	}
-	ResponseSuccess(c, posts)
+
+	users, err := mysql.GetCommentListByPostId(pageNum, postId)
+
+	fmt.Println(len(users))
+	ResponseSuccess(c, users)
+
 }

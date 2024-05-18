@@ -25,10 +25,18 @@ func SetupRouter() *gin.Engine {
 		v1.GET("/community", controller.CommunityHandler)           //获取全部社区信息列表
 		v1.GET("/community/:id", controller.CommunityDetailHandler) //根据id获取社区详情
 
-		v1.POST("/post", controller.CreatePostHandler)        //创建帖子
-		v1.GET("/post/:id", controller.PostDetailHandler)     //获取贴子详情
-		v1.GET("/post", controller.PostListHandler)           //分页获取帖子列表
-		v1.GET("/post/:title", controller.GetPostListByTitle) //模糊分页获取帖子列表
+		v1.POST("/post", controller.CreatePostHandler)                    //创建帖子
+		v1.GET("/post/:id", controller.PostDetailHandler)                 //获取贴子详情
+		v1.GET("/post", controller.PostListHandler)                       //分页获取帖子列表
+		v1.GET("/posts/getPostByTitle", controller.GetPostListByTitle)    //模糊分页获取帖子列表
+		v1.GET("/posts/getPostAudit", controller.GetPostAuditListByTitle) //模糊分页获取帖子列表
+		v1.PUT("/posts/PostAuditSuccess", controller.PostAuditSuccess)    //博客审核通过
+		v1.PUT("/posts/PostAuditFail", controller.PostAuditFail)          //博客审核通过
+
+		//管理员用户管理
+		v1.GET("/admin/userList", controller.GetUserList)
+		v1.PUT("/admin/deleteUser", controller.DeleteUserByUserId)
+		v1.PUT("/admin/recoverUser", controller.RecoverUserByUserName)
 
 		v1.GET("/posts2", controller.PostList2Handler) //获取前两个帖子（包含用户name和communityName）
 
@@ -36,6 +44,16 @@ func SetupRouter() *gin.Engine {
 
 		v1.POST("/comment", controller.CommentHandler)    //评论
 		v1.GET("/comment", controller.CommentListHandler) //根据id获取评论列表
+
+		//点赞
+		v1.POST("/star", controller.Star)                          //评论
+		v1.DELETE("/star", controller.DeleteStarByUserIdAndPostId) //根据id获取评论列表
+		v1.GET("/star", controller.IsStarByParentId)
+		//收藏
+		v1.POST("/collect", controller.Collect)                    //评论
+		v1.DELETE("/collect", controller.DeleteCollectByCollectId) //根据id获取评论列表
+		v1.GET("/collect", controller.IsCollectByParentId)
+		v1.GET("/collectList", controller.GetCollectListByuserId)
 
 		v1.GET("/ping", func(c *gin.Context) {
 			c.String(http.StatusOK, "pong")

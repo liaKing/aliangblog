@@ -42,7 +42,7 @@ export default {
 					password: this.password
 				})
 			}).then((res)=>{
-				console.log(res.data)
+				console.log("1111",res.data)
 				if (res.code == 1000) {
           localStorage.setItem("loginResult", JSON.stringify(res.data));
           this.$store.commit("login", res.data);

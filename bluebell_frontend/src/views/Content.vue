@@ -13,7 +13,7 @@
         </div> -->
         <div class="l-container">
           <h4 class="con-title">{{ post.title }}</h4>
-          <div class="con-info">{{ post.content }}</div>
+          <div class="con-info" v-html="post.content"></div>
         </div>
       </div>
 
@@ -27,13 +27,28 @@
 
         <div class="c-right">
           <div class="c-user-info">
-<!--            根据用户id和文章判断是否以点赞，收藏，有则高亮-->
-            <span class="name mr"><i class="iconfont icon-comment"></i> {{ post.commentNumber }}</span>
-            <span class="num mr"  @click="isCol"><i class="iconfont icon-collect" :class="{isCollect:isCollect}"></i> {{ post.collectNumber }}</span>
-            <span class="num mr"  @click="isStar"><i class="iconfont icon-star"   :class="{starAlready:starAlready}"></i> {{ post.starNumber }}</span>
-            <div class="user-btn" @click="comment()">
+            <!--            根据用户id和文章判断是否以点赞，收藏，有则高亮-->
+            <span class="name mr"
+              ><i class="iconfont icon-comment"></i>
+              {{ post.commentNumber }}</span
+            >
+            <span class="num mr" @click="isCol"
+              ><i
+                class="iconfont icon-collect"
+                :class="{ isCollect: isCollect }"
+              ></i>
+              {{ post.collectNumber }}</span
+            >
+            <span class="num mr" @click="isStar"
+              ><i
+                class="iconfont icon-star"
+                :class="{ starAlready: starAlready }"
+              ></i>
+              {{ post.starNumber }}</span
+            >
+            <div class="user-btn" @click="dialogVisible = true">
               <span class="btn-item">
-                <i class="iconfont icon-pinglun"></i>comment
+                <i class="iconfont icon-pinglun"></i>评论
               </span>
             </div>
           </div>
@@ -42,17 +57,17 @@
             v-for="item of commentList"
             :key="item.comment_id"
           >
-            <div  class="time">
+            <div class="time">
               用户名
               <span>{{ getFormattedDate(item.create_time) }}</span>
             </div>
             <span>{{ item.content }}</span>
-        </div>
+          </div>
         </div>
       </div>
     </div>
 
-<!--写死的不用管下面的代码-->
+    <!--写死的不用管下面的代码-->
     <div class="right">
       <div class="topic-info">
         <h5 class="t-header"></h5>
@@ -75,29 +90,53 @@
         <button class="topic-btn">JOIN</button>
       </div>
     </div>
+    <el-dialog
+      title="评论"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-input
+        type="textarea"
+        :rows="4"
+        placeholder="请输入内容"
+        v-model="textarea"
+      >
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="close">取 消</el-button>
+        <el-button type="primary" @click="verify()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 //使用import语句导入了一个名为formatDate的函数，这个函数用于将日期格式化为更易读的格式，具体是将评论的时间进行处理，因为后端传回来的时间数据格式有问题。
 import formatDate from "../components/formatFDate";
+import markd from "../utils/index";
 // 使用export default导出了Content组件。具体什么作用不是很清楚
 export default {
-  name: "Content",//声明组件名
-  data() { //data函数是什么意思？实现的文件是自己写的，还是内置？
+  name: "Content", //声明组件名
+  data() {
+    //data函数是什么意思？实现的文件是自己写的，还是内置？
     return {
       post: {},
       commentList: [],
-      isCollect:false,
-      starAlready:false,
+      isCollect: false,
+      starAlready: false,
+      dialogVisible: false,
+      textarea: "",
     };
   },
   methods: {
-    getFormattedDate(timeStr) {//关于时间的格式修改
+    getFormattedDate(timeStr) {
+      //关于时间的格式修改
       return formatDate(timeStr);
     },
     //下面这个方法是怎么调用的呢？打开页面就调用？
-    getPostDetail() {//params.id是哪里来的，打开这个组件网页时传来的吗？
+    getPostDetail() {
+      //params.id是哪里来的，打开这个组件网页时传来的吗？
       this.$axios({
         method: "get",
         url: "/post/" + this.$route.params.id,
@@ -105,7 +144,10 @@ export default {
         .then((response) => {
           console.log(1, response.data);
           if (response.code == 1000) {
-            this.post = response.data;//this.post是早先定义的响应式数据属性，在这里为其赋值，
+            // console.log("markd", markd());
+            this.post = response.data; //this.post是早先定义的响应式数据属性，在这里为其赋值，
+            console.log(markd("markd", response.data.content));
+            this.post.content = markd(response.data.content);
           } else {
             console.log(response.msg);
           }
@@ -130,149 +172,178 @@ export default {
           console.log(error);
         });
     },
+    //上面方法运行完就会自动运行下面的方法。
+    getComment() {
+      this.$axios({
+        method: "post",
+        url: "/comment",
+        data: {
+          question_id: "",
+          parent_id: "",
+          content: "",
+        },
+      })
+        .then((response) => {
+          console.log(1, response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     // 收藏
     deleteCollect() {
       this.$axios({
         method: "delete",
         url: "/collect",
-        params: {postId: this.$route.params.id}
+        params: { postId: this.$route.params.id },
       })
-          .then((response) => {
-            console.log(1, response.data);
-            if (response.code == 1000) {
-              this.isCollect = false//this.post是早先定义的响应式数据属性，在这里为其赋值，
-              this.getPostDetail()
-
-            } else {
-              console.log(response.msg);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        .then((response) => {
+          console.log(1, response.data);
+          if (response.code == 1000) {
+            this.isCollect = false; //this.post是早先定义的响应式数据属性，在这里为其赋值，
+            this.getPostDetail();
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     // 是否收藏
-    getPostCollect(){
+    getPostCollect() {
       this.$axios({
         method: "get",
         url: "/collect",
-        params:{postId:this.$route.params.id}
+        params: { postId: this.$route.params.id },
       })
-          .then((response) => {
-            console.log(1, response.data);
-            if (response.code == 1000) {
-              this.isCollect = response.data;//this.post是早先定义的响应式数据属性，在这里为其赋值，
-              this.getPostDetail()
-            } else {
-              console.log(response.msg);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        .then((response) => {
+          console.log(1, response.data);
+          if (response.code == 1000) {
+            this.isCollect = response.data; //this.post是早先定义的响应式数据属性，在这里为其赋值，
+            this.getPostDetail();
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     postCollect() {
       this.$axios({
         method: "post",
         url: "/collect",
-        data:{parentId:this.post.post_id}
+        data: { parentId: this.post.post_id },
       })
-          .then((response) => {
-            console.log(1, response.data);
-            if (response.code == 1000) {
-              this.isCollect = true;//this.post是早先定义的响应式数据属性，在这里为其赋值，
-              this.getPostDetail()
-            } else {
-              console.log(response.msg);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        .then((response) => {
+          console.log(1, response.data);
+          if (response.code == 1000) {
+            this.isCollect = true; //this.post是早先定义的响应式数据属性，在这里为其赋值，
+            this.getPostDetail();
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    comment() {
-      console.log(11);
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
     },
-    isCol(){
+    verify() {
+      this.getComment();
+      this.dialogVisible = false;
+    },
+    close() {
+      this.dialogVisible = false;
+    },
+    isCol() {
       // this.isCollect=!this.isCollect
       if (this.isCollect) {
-        this.deleteCollect()
+        this.deleteCollect();
       } else {
-        this.postCollect()
+        this.postCollect();
       }
     },
 
     // 点赞
-    isStar(){
+    isStar() {
       if (this.starAlready) {
-        this.deleteStar()
+        this.deleteStar();
       } else {
-        this.createStar()
+        this.createStar();
       }
     },
     deleteStar() {
       this.$axios({
         method: "delete",
         url: "/star",
-        params:{postId:this.post.post_id}
+        params: { postId: this.post.post_id },
       })
-          .then((response) => {
-            console.log(1, response.data);
-            if (response.code == 1000) {
-              this.starAlready = false;//this.post是早先定义的响应式数据属性，在这里为其赋值，
-              this.getPostDetail()
-            } else {
-              console.log(response.msg);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        .then((response) => {
+          console.log(1, response.data);
+          if (response.code == 1000) {
+            this.starAlready = false; //this.post是早先定义的响应式数据属性，在这里为其赋值，
+            this.getPostDetail();
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     createStar() {
       this.$axios({
         method: "post",
         url: "/star",
-        data:{parentId:this.post.post_id,targetId:this.post.post_id}
+        data: { parentId: this.post.post_id, targetId: this.post.post_id },
       })
-          .then((response) => {
-            console.log(1, response.data);
-            if (response.code == 1000) {
-              this.starAlready = true;//this.post是早先定义的响应式数据属性，在这里为其赋值，
-              this.getPostDetail()
-            } else {
-              console.log(response.msg);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        .then((response) => {
+          console.log(1, response.data);
+          if (response.code == 1000) {
+            this.starAlready = true; //this.post是早先定义的响应式数据属性，在这里为其赋值，
+            this.getPostDetail();
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    getStarAlready(){
+    getStarAlready() {
       // console.log("111111")
       this.$axios({
         method: "get",
         url: "/star",
-        params:{postId:this.$route.params.id}
+        params: { postId: this.$route.params.id },
       })
-          .then((response) => {
-            console.log(1, response.data);
-            if (response.code == 1000) {
-              this.starAlready = response.data;//this.post是早先定义的响应式数据属性，在这里为其赋值，
-            } else {
-              console.log(response.msg);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        .then((response) => {
+          console.log(1, response.data);
+          if (response.code == 1000) {
+            this.starAlready = response.data; //this.post是早先定义的响应式数据属性，在这里为其赋值，
+          } else {
+            console.log(response.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   mounted: function () {
     this.getPostDetail();
     this.getPostCollect();
-    this.getStarAlready()
+    this.getStarAlready();
   },
+  
 };
 </script>
 
@@ -385,12 +456,12 @@ export default {
         position: relative;
         .c-user-info {
           margin-bottom: 10px;
-        .isCollect{
-          background-color:yellow;
-        }
-        .starAlready{
-          background-color: red;
-        }
+          .isCollect {
+            background-color: yellow;
+          }
+          .starAlready {
+            background-color: red;
+          }
           .user-btn {
             position: absolute;
             top: 0px;
@@ -430,7 +501,7 @@ export default {
           word-break: break-word;
           color: rgb(26, 26, 27);
           margin-bottom: 15px;
-          .time{
+          .time {
             color: #7c7c7c;
           }
         }

@@ -46,8 +46,7 @@ func CreatePost(post *models.Post) (err error) {
 func GetPost(postID string) (post *models.ApiPostDetail, err error) {
 	post, err = mysql.GetPostByID(postID)
 	if err != nil {
-		zap.L().Error("mysql.GetPostByID(postID) failed", zap.String("post_id", postID), zap.Error(err))
-		return nil, err
+		post, _ = mysql.GetPostAuditByID(postID)
 	}
 	user, err := mysql.GetUserByID(fmt.Sprint(post.AuthorId))
 	if err != nil {

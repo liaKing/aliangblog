@@ -10,6 +10,7 @@ type User struct {
 	UserID   string `json:"user_id" db:"user_id"`
 	UserName string `json:"username" db:"username"`
 	Password string `json:"password" db:"password"`
+	Role     int    `json:"role" db:"role"`
 }
 
 type UserInfo struct {
@@ -56,8 +57,6 @@ func (r *RegisterForm) UnmarshalJSON(data []byte) (err error) {
 		err = errors.New("缺少必填字段username")
 	} else if len(required.Password) == 0 {
 		err = errors.New("缺少必填字段password")
-	} else if required.Password != required.ConfirmPassword {
-		err = errors.New("两次密码不一致")
 	} else {
 		r.UserName = required.UserName
 		r.Password = required.Password

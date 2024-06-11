@@ -58,6 +58,7 @@ func LoginHandler(c *gin.Context) {
 		"refreshToken": rToken,
 		"userID":       u.UserID,
 		"username":     u.UserName,
+		"role":         u.Role,
 	})
 }
 

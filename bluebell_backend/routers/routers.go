@@ -29,9 +29,9 @@ func SetupRouter() *gin.Engine {
 		v1.GET("/post/:id", controller.PostDetailHandler)                 //获取贴子详情
 		v1.GET("/post", controller.PostListHandler)                       //分页获取帖子列表
 		v1.GET("/posts/getPostByTitle", controller.GetPostListByTitle)    //模糊分页获取帖子列表
-		v1.GET("/posts/getPostAudit", controller.GetPostAuditListByTitle) //模糊分页获取帖子列表
+		v1.GET("/posts/getPostAudit", controller.GetPostAuditListByTitle) //模糊分页获取审核帖子列表
 		v1.PUT("/posts/PostAuditSuccess", controller.PostAuditSuccess)    //博客审核通过
-		v1.PUT("/posts/PostAuditFail", controller.PostAuditFail)          //博客审核通过
+		v1.PUT("/posts/PostAuditFail", controller.PostAuditFail)          //博客审核失败
 
 		//管理员用户管理
 		v1.GET("/admin/userList", controller.GetUserList)

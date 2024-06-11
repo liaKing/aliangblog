@@ -20,6 +20,7 @@
         </div>
         <div
           class="new btn-iconfont"
+          v-if="role === 1"
           :class="{ active: blogVerify }"
           @click="selectVerify('blogVerify')"
         >
@@ -30,79 +31,256 @@
           class="top btn-iconfont"
           :class="{ active: uInfoManager }"
           @click="selectManager('uInfoManager')"
+          v-if="role === 1"
         >
           <i class="iconfont icon-usermanage"></i>
           <div>用户信息管理</div>
         </div>
         <button class="btn-publish" @click="goPublish">发表</button>
       </div>
+
+      <el-tabs
+        v-show="tabsShow"
+        v-model="activeName"
+        type="border-card"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane label="全部" name="all">
+          <ul class="c-l-list">
+            <li
+              class="c-l-item"
+              v-for="(post, index) in postList"
+              :key="index + post.id"
+            >
+              <div class="l-container" @click="goDetail(post.post_id)">
+                <h4 class="con-title">
+                  {{ post.title }}
+                  <div class="con-button" v-if="type == 'blogVerify'">
+                    <el-button
+                      type="success"
+                      size="mini"
+                      @click.stop="audit(true, post.post_id)"
+                      >审核通过</el-button
+                    >
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      @click.stop="audit(false, post.post_id)"
+                      >审核未通过</el-button
+                    >
+                  </div>
+                </h4>
+                <div class="con-memo">
+                  <p>{{ post.content }}</p>
+                </div>
+              </div>
+            </li>
+          </ul></el-tab-pane
+        >
+        <el-tab-pane label="控球后卫" name="first">
+          <ul class="c-l-list">
+            <li
+              class="c-l-item"
+              v-for="(post, index) in postList"
+              :key="index + post.id"
+            >
+              <div class="l-container" @click="goDetail(post.post_id)">
+                <h4 class="con-title">
+                  {{ post.title }}
+                  <div class="con-button" v-if="type == 'blogVerify'">
+                    <el-button
+                      type="success"
+                      size="mini"
+                      @click.stop="audit(true, post.post_id)"
+                      >审核通过</el-button
+                    >
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      @click.stop="audit(false, post.post_id)"
+                      >审核未通过</el-button
+                    >
+                  </div>
+                </h4>
+                <div class="con-memo">
+                  <p>{{ post.content }}</p>
+                </div>
+              </div>
+            </li>
+          </ul></el-tab-pane
+        >
+        <el-tab-pane label="得分后卫" name="second">
+          <ul class="c-l-list">
+            <li
+              class="c-l-item"
+              v-for="(post, index) in postList"
+              :key="index + post.id"
+            >
+              <div class="l-container" @click="goDetail(post.post_id)">
+                <h4 class="con-title">
+                  {{ post.title }}
+                  <div class="con-button" v-if="type == 'blogVerify'">
+                    <el-button
+                      type="success"
+                      size="mini"
+                      @click.stop="audit(true, post.post_id)"
+                      >审核通过</el-button
+                    >
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      @click.stop="audit(false, post.post_id)"
+                      >审核未通过</el-button
+                    >
+                  </div>
+                </h4>
+                <div class="con-memo">
+                  <p>{{ post.content }}</p>
+                </div>
+              </div>
+            </li>
+          </ul></el-tab-pane
+        >
+        <el-tab-pane label="小前锋" name="third">
+          <ul class="c-l-list">
+            <li
+              class="c-l-item"
+              v-for="(post, index) in postList"
+              :key="index + post.id"
+            >
+              <div class="l-container" @click="goDetail(post.post_id)">
+                <h4 class="con-title">
+                  {{ post.title }}
+                  <div class="con-button" v-if="type == 'blogVerify'">
+                    <el-button
+                      type="success"
+                      size="mini"
+                      @click.stop="audit(true, post.post_id)"
+                      >审核通过</el-button
+                    >
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      @click.stop="audit(false, post.post_id)"
+                      >审核未通过</el-button
+                    >
+                  </div>
+                </h4>
+                <div class="con-memo">
+                  <p>{{ post.content }}</p>
+                </div>
+              </div>
+            </li>
+          </ul></el-tab-pane
+        >
+        <el-tab-pane label="大前锋" name="fourth">
+          <ul class="c-l-list">
+            <li
+              class="c-l-item"
+              v-for="(post, index) in postList"
+              :key="index + post.id"
+            >
+              <div class="l-container" @click="goDetail(post.post_id)">
+                <h4 class="con-title">
+                  {{ post.title }}
+                  <div class="con-button" v-if="type == 'blogVerify'">
+                    <el-button
+                      type="success"
+                      size="mini"
+                      @click.stop="audit(true, post.post_id)"
+                      >审核通过</el-button
+                    >
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      @click.stop="audit(false, post.post_id)"
+                      >审核未通过</el-button
+                    >
+                  </div>
+                </h4>
+                <div class="con-memo">
+                  <p>{{ post.content }}</p>
+                </div>
+              </div>
+            </li>
+          </ul></el-tab-pane
+        >
+        <el-tab-pane label="中锋" name="fifth">
+          <ul class="c-l-list">
+            <li
+              class="c-l-item"
+              v-for="(post, index) in postList"
+              :key="index + post.id"
+            >
+              <div class="l-container" @click="goDetail(post.post_id)">
+                <h4 class="con-title">
+                  {{ post.title }}
+                  <div class="con-button" v-if="type == 'blogVerify'">
+                    <el-button
+                      type="success"
+                      size="mini"
+                      @click.stop="audit(true, post.post_id)"
+                      >审核通过</el-button
+                    >
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      @click.stop="audit(false, post.post_id)"
+                      >审核未通过</el-button
+                    >
+                  </div>
+                </h4>
+                <div class="con-memo">
+                  <p>{{ post.content }}</p>
+                </div>
+              </div>
+            </li>
+          </ul></el-tab-pane
+        >
+      </el-tabs>
+
       <!-- 用户信息管理 -->
       <ul v-if="isUser" class="c-l-list">
         <li class="c-l-item" v-for="(info, index) in infoList" :key="index">
           <div class="flex-container">
             <div class="flex">
               <h4 class="flex-title">{{ info.username }}</h4>
-              <span class="con-memo">{{ getFormattedDate(info.createTime) }}</span>
+              <span class="con-memo">{{
+                getFormattedDate(info.createTime)
+              }}</span>
             </div>
-            <span class="btn" v-if="info.delFlg" @click="recoverDel(info.username)">撤销删除</span>
-            <span class="btn" v-else @click="deleteUser(info.user_id)">删除用户</span>
+            <span
+              class="btn"
+              v-if="info.delFlg"
+              @click="recoverDel(info.username)"
+              >撤销删除</span
+            >
+            <span class="btn" v-else @click="deleteUser(info.user_id)"
+              >删除用户</span
+            >
           </div>
         </li>
       </ul>
       <!-- 非用户信息管理 -->
-      <ul v-else class="c-l-list">
+      <!-- <ul v-else class="c-l-list">
         <li
           class="c-l-item"
           v-for="(post, index) in postList"
           :key="index + post.id"
         >
-          <!-- <div class="post">
-            <a class="vote">
-              <span class="iconfont icon-up" @click="vote(post.id, '1')"></span>
-            </a>
-            <span class="text">{{ post.vote_num }}</span>
-            <a class="vote">
-              <span
-                  class="iconfont icon-down"
-                  @click="vote(post.id, '-1')"
-              ></span>
-            </a>
-          </div> -->
           <div class="l-container" @click="goDetail(post.post_id)">
             <h4 class="con-title">{{ post.title }}</h4>
             <div class="con-memo">
               <p>{{ post.content }}</p>
             </div>
-            <!-- <div class="user-btn">
-              <span class="btn-item">
-                <i class="iconfont icon-comment"></i>
-                <span>{{post.comments}} comments</span>
-              </span>
-            </div> -->
           </div>
         </li>
-      </ul>
+      </ul> -->
     </div>
     <div class="right">
       <div class="communities">
         <h2 class="r-c-title">今日火热频道排行榜</h2>
-        <!-- <ul class="r-c-content">
-          <li class="r-c-item">
-            <span class="index">1</span>
-            <i class="icon"></i>
-            b/coding
-          </li>
-          <li class="r-c-item">
-            <span class="index">2</span>
-            <i class="icon"></i>
-            b/tree_hole
-          </li>
-          <li class="r-c-item">
-            <span class="index">3</span>
-            <i class="icon"></i>
-            b/job
-          </li>
-        </ul> -->
+
         <ul class="r-c-content">
           <li class="r-c-item" v-for="(item, index) in hotChannel" :key="index">
             <span class="index">{{ index + 1 }}</span>
@@ -111,43 +289,6 @@
         </ul>
         <button class="view-all">查看所有</button>
       </div>
-      <!--
-      <div class="r-trending">
-        <h2 class="r-t-title">持续热门频道</h2>
-        <ul class="rank">
-          <li class="r-t-cell">
-            <div class="r-t-cell-info">
-              <div class="avatar"></div>
-              <div class="info">
-                <span class="info-title">b/Book</span>
-                <p class="info-num">7.1k members</p>
-              </div>
-            </div>
-            <button class="join-btn">JOIN</button>
-          </li>
-          <li class="r-t-cell">
-            <div class="r-t-cell-info">
-              <div class="avatar"></div>
-              <div class="info">
-                <span class="info-title">b/coding</span>
-                <p class="info-num">3.2k members</p>
-              </div>
-            </div>
-            <button class="join-btn">JOIN</button>
-          </li>
-          <li class="r-t-cell">
-            <div class="r-t-cell-info">
-              <div class="avatar"></div>
-              <div class="info">
-                <span class="info-title">b/job</span>
-                <p class="info-num">2.5k members</p>
-              </div>
-            </div>
-            <button class="join-btn">JOIN</button>
-          </li>
-        </ul>
-      </div>
-      -->
     </div>
   </div>
 </template>
@@ -162,6 +303,16 @@ export default {
   props: ["searchInput"],
   data() {
     return {
+      role: "",
+      activeName: "all", //标签页默认选项
+      community: {
+        first: 1,
+        second: 2,
+        third: 3,
+        fourth: 4,
+        fifth: 5,
+      },
+      tabsShow: true,
       order: "time",
       type: "time",
       page: 1,
@@ -195,17 +346,22 @@ export default {
       return formatDate(timeStr);
     },
     selectOrder(order) {
+      this.tabsShow = true;
       this.isUser = false;
       this.type = order;
       this.order = order;
-      this.getPostList();
+      this.activeName = "all";
+      this.getSearchList();
     },
     selectVerify(val) {
+      this.tabsShow = true;
       this.isUser = false;
       this.type = val;
+      this.activeName = "all";
       this.getPostAudit();
     },
     selectManager(val) {
+      this.tabsShow = false;
       this.isUser = true;
       this.type = val;
       this.getUserList();
@@ -216,35 +372,16 @@ export default {
     goDetail(id) {
       this.$router.push({ name: "Content", params: { id: id } });
     },
-    getPostList() {
-      this.$axios({
-        method: "get",
-        url: "/posts2",
-        params: {
-          page: this.page,
-          order: this.order,
-        },
-      })
-        .then((response) => {
-          if (response.code == 1000) {
-            this.postList = response.data;
-            console.log("首页", this.postList);
-          } else {
-            console.log(response.msg);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
+
     // 根据搜索内容查询list
-    getSearchList() {
+    getSearchList(data) {
       this.$axios({
         method: "get",
         url: "/posts/getPostByTitle",
         params: {
           page: this.page,
           title: this.searchInput,
+          communityId: this.community[data],
         },
       })
         .then((response) => {
@@ -260,12 +397,13 @@ export default {
         });
     },
     // /posts/getPostAudit
-    getPostAudit() {
+    getPostAudit(data) {
       this.$axios({
         method: "get",
         url: "/posts/getPostAudit",
         params: {
           page: this.page,
+          communityId: this.community[data],
         },
       })
         .then((response) => {
@@ -301,7 +439,38 @@ export default {
           console.log(error);
         });
     },
-    deleteUser(userId){
+    //
+    getAuditSuccess(id) {
+      this.$axios({
+        method: "put",
+        url: "/posts/PostAuditSuccess",
+        params: {
+          postId: id,
+        },
+      })
+        .then(() => {
+          this.getPostAudit(this.activeName);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getAuditFail(id) {
+      this.$axios({
+        method: "put",
+        url: "/posts/PostAuditFail",
+        params: {
+          postId: id,
+        },
+      })
+        .then(() => {
+          this.getPostAudit(this.activeName);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    deleteUser(userId) {
       this.$axios({
         method: "put",
         url: "/admin/deleteUser",
@@ -311,7 +480,7 @@ export default {
       })
         .then((response) => {
           if (response.code == 1000) {
-            this.getUserList()
+            this.getUserList();
           } else {
             console.log(response.msg);
           }
@@ -320,7 +489,7 @@ export default {
           console.log(error);
         });
     },
-    recoverDel(userName){
+    recoverDel(userName) {
       this.$axios({
         method: "put",
         url: "/admin/recoverUser",
@@ -330,7 +499,7 @@ export default {
       })
         .then((response) => {
           if (response.code == 1000) {
-            this.getUserList()
+            this.getUserList();
             console.log("删除用户信息", response.data);
           } else {
             console.log(response.msg);
@@ -360,9 +529,31 @@ export default {
           console.log(error);
         });
     },
+
+    // 标签页点击事件
+    handleClick(tab, event) {
+      if (this.type == "blogVerify") {
+        this.getPostAudit(tab.name);
+      } else {
+        this.getSearchList(tab.name);
+      }
+
+      console.log(tab.name, event);
+    },
+
+    //
+    audit(data, id) {
+      if (data) {
+        this.getAuditSuccess(id);
+      } else {
+        this.getAuditFail(id);
+      }
+    },
   },
   mounted: function () {
-    this.getPostList();
+    this.getSearchList();
+    this.role = JSON.parse(localStorage.getItem("loginResult")).role;
+    console.log("this.role", this.role);
   },
   computed: {
     timeOrder() {
@@ -493,7 +684,7 @@ export default {
             display: flex;
             align-content: center;
           }
-          .flex-title{
+          .flex-title {
             color: #000000;
             font-size: 18px;
             font-weight: 500;
@@ -501,9 +692,9 @@ export default {
             word-break: break-word;
             margin-right: 10px;
           }
-          .btn{
+          .btn {
             font-size: 15px;
-            padding: 5px 10px ;
+            padding: 5px 10px;
             color: #fff;
             border-radius: 4px;
             background-color: #0079d3;
@@ -548,10 +739,18 @@ export default {
             line-height: 22px;
             text-decoration: none;
             word-break: break-word;
+            .con-button {
+              float: right;
+            }
           }
           .con-memo {
             margin-top: 10px;
             margin-bottom: 10px;
+            p {
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
           }
 
           .con-cover {

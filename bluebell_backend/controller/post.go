@@ -46,12 +46,13 @@ func GetPostListByTitle(c *gin.Context) {
 	if !ok {
 		pageStr = "1"
 	}
+	communityId, _ := c.GetQuery("communityId")
 	title, _ := c.GetQuery("title")
 	pageNum, err := strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
 		pageNum = 1
 	}
-	posts, err := mysql.GetPostListByTitle(title, pageNum)
+	posts, err := mysql.GetPostListByTitle(title, pageNum, communityId)
 
 	fmt.Println(len(posts))
 	ResponseSuccess(c, posts)
@@ -87,11 +88,11 @@ func PostList2Handler(c *gin.Context) {
 // PostDetailHandler 帖子详情
 func PostDetailHandler(c *gin.Context) {
 	postId := c.Param("id")
-
-	post, err := logic.GetPost(postId)
-	if err != nil {
-		zap.L().Error("logic.GetPost(postID) failed", zap.String("postId", postId), zap.Error(err))
-	}
+	var post *models.ApiPostDetail
+	post, _ = logic.GetPost(postId)
+	//if err != nil {
+	//	zap.L().Error("logic.GetPost(postID) failed", zap.String("postId", postId), zap.Error(err))
+	//}
 
 	ResponseSuccess(c, post)
 }
@@ -101,13 +102,13 @@ func GetPostAuditListByTitle(c *gin.Context) {
 	if !ok {
 		pageStr = "1"
 	}
-
+	communityId, _ := c.GetQuery("communityId")
 	pageNum, err := strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
 		pageNum = 1
 	}
 
-	posts, err := mysql.GetPostAuditListByTitle(pageNum)
+	posts, err := mysql.GetPostAuditListByTitle(pageNum, communityId)
 
 	fmt.Println(len(posts))
 	ResponseSuccess(c, posts)

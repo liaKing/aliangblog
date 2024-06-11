@@ -24,6 +24,24 @@ func CreatePost(post *models.Post) (err error) {
 	return
 }
 
+func GetPostAuditByID(idStr string) (post *models.ApiPostDetail, err error) {
+	post = new(models.ApiPostDetail)
+	sqlStr := `select post_id, title, content, author_id, community_id, created_time
+	from post_audit
+	where post_id = ?`
+	err = db.Get(post, sqlStr, idStr)
+	if err == sql.ErrNoRows {
+		err = ErrorInvalidID
+		return
+	}
+	if err != nil {
+		zap.L().Error("query post failed", zap.String("sql", sqlStr), zap.Error(err))
+		err = ErrorQueryFailed
+		return
+	}
+	return
+}
+
 // GetPostByID
 func GetPostByID(idStr string) (post *models.ApiPostDetail, err error) {
 	post = new(models.ApiPostDetail)
@@ -57,13 +75,49 @@ func GetPostListByIDs(ids []string) (postList []*models.Post, err error) {
 	err = db.Select(&postList, query, args...)
 	return
 }
-func GetPostListByTitle(title string, page int64) (postList []*models.Post, err error) {
+func GetPostListByTitle(title string, page int64, communityId string) (postList []*models.Post, err error) {
+	var sqlStr string
+	if communityId == "" {
+		if title == "" {
+			sqlStr = `SELECT * FROM post  LIMIT 10 OFFSET ?;`
+		} else {
+			sqlStr = `SELECT * FROM post WHERE title LIKE ? LIMIT 10 OFFSET ?;`
+		}
+	} else {
+		if title == "" {
+			sqlStr = `SELECT * FROM post WHERE community_id = ?  LIMIT 10 OFFSET ?;`
+		} else {
 
-	sqlStr := `SELECT * FROM post WHERE title LIKE ? LIMIT 10 OFFSET ?;`
+			sqlStr = `SELECT * FROM post WHERE community_id = ? and title LIKE ? LIMIT 10 OFFSET ?;`
+
+		}
+	}
 	offset := (page - 1) * 10
 
 	postList = make([]*models.Post, 0, 10)
-	err = db.Select(&postList, sqlStr, "%"+title+"%", offset)
+
+	if communityId == "" {
+		if title == "" {
+			err = db.Select(&postList, sqlStr, offset)
+		} else {
+			err = db.Select(&postList, sqlStr, "%"+title+"%", offset)
+		}
+	} else {
+		if title == "" {
+			err = db.Select(&postList, sqlStr, communityId, offset)
+		} else {
+
+			err = db.Select(&postList, sqlStr, communityId, "%"+title+"%", offset)
+
+		}
+	}
+
+	//
+	//if communityId == "" {
+	//	err = db.Select(&postList, sqlStr, "%"+title+"%", offset)
+	//} else {
+	//	err = db.Select(&postList, sqlStr, communityId, "%"+title+"%", offset)
+	//}
 
 	return
 }
@@ -78,12 +132,21 @@ func GetPostList() (posts []*models.ApiPostDetail, err error) {
 	return
 }
 
-func GetPostAuditListByTitle(page int64) (postList []*models.Post, err error) {
-	sqlStr := `SELECT * FROM post_audit LIMIT 10 OFFSET ?;`
+func GetPostAuditListByTitle(page int64, communityId string) (postList []*models.Post, err error) {
+	var sqlStr string
+	if communityId == "" {
+		sqlStr = `SELECT * FROM post_audit WHERE published = 0 LIMIT 10 OFFSET ?;`
+	} else {
+		sqlStr = `SELECT * FROM post_audit WHERE published = 0 and community_id = ? LIMIT 10 OFFSET ?;`
+	}
 	offset := (page - 1) * 10
 
 	postList = make([]*models.Post, 0, 10)
-	err = db.Select(&postList, sqlStr, offset)
+	if communityId == "" {
+		err = db.Select(&postList, sqlStr, offset)
+	} else {
+		err = db.Select(&postList, sqlStr, communityId, offset)
+	}
 	return
 }
 

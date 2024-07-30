@@ -251,10 +251,10 @@ export default {
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
-        .then((_) => {
+        .then(() => { //修改前：(_) => {
           done();
         })
-        .catch((_) => {});
+        .catch(() => {}); //修改前：(_) => {
     },
     verify() {
       this.getComment();

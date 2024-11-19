@@ -9,7 +9,7 @@
                     <el-form ref="form" :model="form" :label-position="labelPosition">
                         <el-form-item label="按名称">
                             <el-input v-model="form.name" style="max-width: 217px;"></el-input>
-                            <el-button type="primary" @click="search(form.name, null)"
+                            <el-button type="primary" @click="search(form.name, form.tag)"
                                 style="float: right;">筛选</el-button>
 
                         </el-form-item>
@@ -20,7 +20,7 @@
                                     :value="item.tagId">
                                 </el-option>
                             </el-select>
-                            <el-button type="primary" @click="search(null, form.tag)"
+                            <el-button type="primary" @click="search(form.name, form.tag)"
                                 style="float: right;">筛选</el-button>
                         </el-form-item>
                     </el-form>
@@ -170,21 +170,26 @@ export default {
             this.form.name = name
             this.form.tag = tag
             // 过滤掉任何非字符串的元素，确保只包含有效的标签ID  
-            this.tags = tag.filter(item => typeof item === 'string');
             console.log(name, this.tags);
-            // this.tags = tag
+            this.tags = tag
             console.log(name, tag, this.tags);
+            const params = {
+                page: this.currentPage,
+                pageNum: this.pageSize,
+                title: name,
+                projectId: 1,
+                version: 1
+            };
+
+            if (tag) {
+                params.tagIds = this.tags;
+            }
+
+
             this.$axios({
                 method: 'get',
                 url: '/getImageList',
-                params: {
-                    page: this.currentPage,
-                    pageNum: this.pageSize,
-                    title: name,
-                    projectId: 1,
-                    version: 1,
-                    tagIds: this.tags
-                },
+                params: params,
                 paramsSerializer: params => {
                     return qs.stringify(params, { arrayFormat: 'repeat' });
                 }

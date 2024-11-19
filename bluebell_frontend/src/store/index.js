@@ -17,7 +17,7 @@ export default new Vuex.Store({
   mutations: {
     init(state){
       let loginResult = JSON.parse(localStorage.getItem("loginResult"));
-      console.log(localStorage.getItem("loginResult"));
+      console.log(localStorage.getItem("loginResult"),'000000',loginResult.accessToken);
       if (loginResult !=null){
         state.loginResult = loginResult;
       }

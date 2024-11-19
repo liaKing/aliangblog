@@ -38,7 +38,7 @@ export default {
 				method: 'post',
 				url:'/login',
 				data: JSON.stringify({
-					username: this.username,
+					userName: this.username,
 					password: this.password
 				})
 			}).then((res)=>{

@@ -18,6 +18,9 @@
         >
           <i class="iconfont icon-rank"></i>Score
         </div>
+        <el-button type="primary"  @click="goUpload">上传图片</el-button>
+        <el-button type="primary"  @click="getImage">获取上传的图片</el-button>
+
         <div
           class="new btn-iconfont"
           v-if="role === 1"
@@ -278,6 +281,16 @@
       </ul> -->
     </div>
     <div class="right">
+      <el-upload 
+                class="upload-demo" 
+                drag 
+                :action="action"
+                multiple
+            >
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
       <div class="communities">
         <h2 class="r-c-title">今日火热频道排行榜</h2>
 
@@ -319,6 +332,7 @@ export default {
       postList: [],
       infoList: [],
       isUser: false,
+      action: "/api/v1/image/upload",
       hotChannel: [
         { title: "专注跳投" },
         { title: "NBA赛事讲解" },
@@ -344,6 +358,12 @@ export default {
   methods: {
     getFormattedDate(timeStr) {
       return formatDate(timeStr);
+    },
+    goUpload(){
+      this.$router.push({ name: "Upload" });
+    },
+    getImage(){
+      this.$router.push({ name: "GetImg" });
     },
     selectOrder(order) {
       this.tabsShow = true;

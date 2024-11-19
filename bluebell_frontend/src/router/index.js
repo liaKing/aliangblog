@@ -5,6 +5,11 @@ import Content from '../views/Content.vue'
 import Publish from '../views/Publish.vue'
 import Login from '../views/Login.vue'
 import SignUp from '../views/SignUp.vue'
+
+import Upload from '../views/Upload.vue' // 上传、浏览、下载图片
+import getImg from '../views/getImg.vue' // 上传、浏览、下载图片
+
+
 const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err);
@@ -37,6 +42,16 @@ Vue.use(VueRouter)
     path: '/signup',
     name:"SignUp",
     component: SignUp
+  },
+  {
+    path: '/upload',
+    name:"Upload",
+    component: Upload
+  },
+  {
+    path: '/getImg',
+    name:"GetImg",
+    component: getImg
   }
 ]
 

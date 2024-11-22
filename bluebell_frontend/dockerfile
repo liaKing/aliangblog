@@ -1,0 +1,26 @@
+# 构建阶段
+FROM node:18-alpine as build-stage
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制package.json文件
+COPY package*.json ./
+
+# 安装项目依赖
+RUN npm install
+
+# 复制项目文件
+COPY . .
+
+# 构建应用
+RUN npm run build
+
+# 安装serve包
+RUN npm install -g serve
+
+# 暴露端口（根据配置文件使用9000端口）
+EXPOSE 9000
+
+# 使用serve启动应用，指定端口为9000
+CMD ["serve", "-s", "dist", "-l", "9000"]

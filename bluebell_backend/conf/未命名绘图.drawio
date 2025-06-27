@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" version="27.1.6">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="6744" dy="3445" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2672" dy="689" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -50,6 +50,9 @@
           <mxGeometry x="-910" y="150" width="600" height="400" as="geometry" />
         </mxCell>
         <mxCell id="LP8oODeriV-j-1VuSuoN-27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="LP8oODeriV-j-1VuSuoN-12" target="LP8oODeriV-j-1VuSuoN-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="LP8oODeriV-j-1VuSuoN-168" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="LP8oODeriV-j-1VuSuoN-12" target="LP8oODeriV-j-1VuSuoN-167">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="LP8oODeriV-j-1VuSuoN-12" value="封装&lt;span style=&quot;text-align: left; text-wrap-mode: nowrap;&quot;&gt;内部chatRequest&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
@@ -365,6 +368,12 @@
         </mxCell>
         <mxCell id="LP8oODeriV-j-1VuSuoN-165" value="更新用户消息的子消息和会话消息" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="440" y="1600" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LP8oODeriV-j-1VuSuoN-167" value="内部参数调整" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="360" y="510" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LP8oODeriV-j-1VuSuoN-169" value="对所有文件进行签名" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="175" y="2018" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
